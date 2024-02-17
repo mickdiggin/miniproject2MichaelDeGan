@@ -67,6 +67,18 @@ def getActivities(activities):
     df.to_excel("selectedactivities.xlsx", sheet_name="Sheet1", index=False)
     return df
 
+def makePlot(data):
+    data.sort_values(by=['total_calories'], inplace=True)
+    data.reset_index(drop=True, inplace=True)
+    #data.to_excel("sortedactivities.xlsx", sheet_name="Sheet1", index=False)
+    horiz = []
+    index = 1
+
+    #Build x-label list
+    while index < data.index.size:
+        temp = str(data.at[index, 'name'])
+        horiz.append(temp)
+        index += 1
 # Program start
 # Get local copy of all activities in caloriesburned database for easy reference, if not already saved.
 path = Path('./caloriesburned.xlsx')
@@ -79,4 +91,4 @@ activities = ["Cleaning, dusting", "Taking out trash", "Mowing lawn, walk, power
 
 theActivities = getActivities(activities)
 
-print(theActivities)
+makePlot(theActivities)
