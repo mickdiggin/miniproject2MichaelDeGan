@@ -42,7 +42,7 @@ def getAllActivities():
 
     # Assign to a DataFrame variable
     df = pd.read_json(response.text)
-    # Store in an excel file to reduce the number of api calls.
+    # Store in an excel file for later reference to reduce the number of api calls.
     df.to_excel("caloriesburned.xlsx", sheet_name="Sheet1", index=False)
 
 def getActivities(activities):
@@ -58,14 +58,6 @@ def getActivities(activities):
         else:
             print("Error:", response.status_code, response.text)
 
-        # # Store in df
-        # temp = dict(pd.read_json(response.text))
-        # temp = list(temp.values())
-        # final = []
-        # i = 0
-        # for item in temp:
-        #     final.append(temp[i].loc[0])
-        #     i += 1
         temp = json.loads(response.text)
         final = temp[0]
         df.loc[index] = final.values()
@@ -74,6 +66,7 @@ def getActivities(activities):
     # Store in excel file to see all of our data more easily than in the console.
     df.to_excel("selectedactivities.xlsx", sheet_name="Sheet1", index=False)
     return df
+
 # Program start
 # Get local copy of all activities in caloriesburned database for easy reference, if not already saved.
 path = Path('./caloriesburned.xlsx')
@@ -82,7 +75,7 @@ if not path.is_file():
 
 # Send chosen activities to the api.
 activities = ["Cleaning, dusting", "Taking out trash", "Mowing lawn, walk, power mower", "Football, competitive",
-              "Cross country skiing, racing", "Climbing hills, carrying over 42 lb"]
+              "Cross country skiing, racing", "Track and field (hurdles)"]
 
 theActivities = getActivities(activities)
 
