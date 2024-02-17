@@ -25,6 +25,7 @@
 # explanations.
 
 import requests
+import json
 import pandas as pd
 import matplotlib.pyplot as plt
 from pathlib import Path
@@ -57,8 +58,17 @@ def getActivities(activities):
         else:
             print("Error:", response.status_code, response.text)
 
-        # Store in df
-        df.loc[index] = pd.read_json(response.text)
+        # # Store in df
+        # temp = dict(pd.read_json(response.text))
+        # temp = list(temp.values())
+        # final = []
+        # i = 0
+        # for item in temp:
+        #     final.append(temp[i].loc[0])
+        #     i += 1
+        temp = json.loads(response.text)
+        final = temp[0]
+        df.loc[index] = final.values()
         index += 1
 
     # Store in excel file to see all of our data more easily than in the console.
@@ -75,3 +85,5 @@ activities = ["Cleaning, dusting", "Taking out trash", "Mowing lawn, walk, power
               "Cross country skiing, racing", "Climbing hills, carrying over 42 lb"]
 
 theActivities = getActivities(activities)
+
+print(theActivities)
