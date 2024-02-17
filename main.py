@@ -66,18 +66,31 @@ def getActivities(activities):
 def makePlot(data):
     data.sort_values(by=['total_calories'], inplace=True)
     data.reset_index(drop=True, inplace=True)
-    plt.bar(data['name'], data['total_calories'])
-    plt.xticks(fontsize = 8)
-    plt.show()
-    #data.to_excel("sortedactivities.xlsx", sheet_name="Sheet1", index=False)
-    # horiz = []
-    # index = 1
 
-    #Build x-label list
-    # while index < data.index.size:
-    #     temp = str(data.at[index, 'name'])
-    #     horiz.append(temp)
-    #     index += 1
+    # fig, barGraph = plt.subplots()
+    # barGraph.bar(data['name'], data['total_calories'])
+    # plt.xticks(fontsize = 5)
+
+    fig, horizBar = plt.subplots(figsize=(10, 8))
+    box = horizBar.get_position()
+    box.x0 = box.x0 + 0.11
+    #box.x1 = box.x1 + 0.05
+    horizBar.set_position(box)
+    bar_colors = ['green', 'green', 'green', 'red', 'red', 'red']
+    horizBar.barh(data['name'], data['total_calories'], color=bar_colors)
+    horizBar.invert_yaxis()  # labels read top-to-bottom
+    horizBar.set_xlabel('Calories Burned Per Hour')
+    horizBar.set_title('Calories Burned,\n Household Chores vs. Competitive Sports')
+    plt.yticks(fontsize = 9)
+
+    path = Path('./charts')
+    if not path.is_dir():
+        path.mkdir()
+
+    savePath = "charts/bargraph.png"
+    plt.savefig(savePath, dpi=200)
+    plt.show()
+
 # Program start
 # Get local copy of all activities in caloriesburned database for easy reference, if not already saved.
 path = Path('./caloriesburned.xlsx')
