@@ -35,9 +35,7 @@ def getAllActivities():
     # Request a listing of all activities in the caloriesburned database.
     api_url = 'https://api.api-ninjas.com/v1/caloriesburnedactivities'
     response = requests.get(api_url, headers={'X-Api-Key': theKey})
-    if response.status_code == requests.codes.ok:
-        print(response.text)
-    else:
+    if response.status_code != requests.codes.ok:
         print("Error:", response.status_code, response.text)
 
     # Assign to a DataFrame variable
@@ -53,9 +51,7 @@ def getActivities(activities):
     for activity in activities:
         api_url = 'https://api.api-ninjas.com/v1/caloriesburned?activity={}'.format(activity)
         response = requests.get(api_url, headers={'X-Api-Key': theKey})
-        if response.status_code == requests.codes.ok:
-            print(response.text)
-        else:
+        if response.status_code != requests.codes.ok:
             print("Error:", response.status_code, response.text)
 
         temp = json.loads(response.text)
@@ -70,15 +66,18 @@ def getActivities(activities):
 def makePlot(data):
     data.sort_values(by=['total_calories'], inplace=True)
     data.reset_index(drop=True, inplace=True)
+    plt.bar(data['name'], data['total_calories'])
+    plt.xticks(fontsize = 8)
+    plt.show()
     #data.to_excel("sortedactivities.xlsx", sheet_name="Sheet1", index=False)
-    horiz = []
-    index = 1
+    # horiz = []
+    # index = 1
 
     #Build x-label list
-    while index < data.index.size:
-        temp = str(data.at[index, 'name'])
-        horiz.append(temp)
-        index += 1
+    # while index < data.index.size:
+    #     temp = str(data.at[index, 'name'])
+    #     horiz.append(temp)
+    #     index += 1
 # Program start
 # Get local copy of all activities in caloriesburned database for easy reference, if not already saved.
 path = Path('./caloriesburned.xlsx')
