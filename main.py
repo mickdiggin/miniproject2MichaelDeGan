@@ -64,6 +64,7 @@ def getActivities(activities):
     return df
 
 def makePlot(data):
+    #Sort data
     data.sort_values(by=['total_calories'], inplace=True)
     data.reset_index(drop=True, inplace=True)
 
@@ -71,18 +72,21 @@ def makePlot(data):
     # barGraph.bar(data['name'], data['total_calories'])
     # plt.xticks(fontsize = 5)
 
-    fig, horizBar = plt.subplots(figsize=(10, 8))
+    fig, horizBar = plt.subplots(figsize=(10, 8), facecolor='#c9ac83')
     box = horizBar.get_position()
     box.x0 = box.x0 + 0.11
-    #box.x1 = box.x1 + 0.05
     horizBar.set_position(box)
-    bar_colors = ['green', 'green', 'green', 'red', 'red', 'red']
-    horizBar.barh(data['name'], data['total_calories'], color=bar_colors)
+
+    green = '#498f3b'
+    red = '#cc3535'
+    bar_colors = [green, green, green, red, red, red]
+    horizBar.barh(data['name'], data['total_calories'], color=bar_colors, edgecolor='#000000', linewidth=0.5)
     horizBar.invert_yaxis()  # labels read top-to-bottom
     horizBar.set_xlabel('Calories Burned Per Hour')
     horizBar.set_title('Calories Burned,\n Household Chores vs. Competitive Sports')
-    plt.yticks(fontsize = 9)
+    horizBar.set_facecolor('#ebcca0')
 
+    plt.yticks(fontsize = 9)
     path = Path('./charts')
     if not path.is_dir():
         path.mkdir()
