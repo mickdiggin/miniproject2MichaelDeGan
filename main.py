@@ -54,6 +54,7 @@ def getActivities(activities):
         if response.status_code != requests.codes.ok:
             print("Error:", response.status_code, response.text)
 
+        #Loading JSON data to a list first removed a lot of extraneous info before appending to the DataFrame.
         temp = json.loads(response.text)
         final = temp[0]
         df.loc[index] = final.values()
@@ -68,29 +69,31 @@ def makePlot(data):
     data.sort_values(by=['total_calories'], inplace=True)
     data.reset_index(drop=True, inplace=True)
 
-    # fig, barGraph = plt.subplots()
-    # barGraph.bar(data['name'], data['total_calories'])
-    # plt.xticks(fontsize = 5)
-
+    #Create horizBar chart as  a subplot for easy manipulation of values.
     fig, horizBar = plt.subplots(figsize=(10, 8), facecolor='#c9ac83')
+
+    #Shift right to better display y-ticks.
     box = horizBar.get_position()
     box.x0 = box.x0 + 0.11
     horizBar.set_position(box)
 
+    #Style graph
     green = '#498f3b'
     red = '#cc3535'
     bar_colors = [green, green, green, red, red, red]
     horizBar.barh(data['name'], data['total_calories'], color=bar_colors, edgecolor='#000000', linewidth=0.5)
-    horizBar.invert_yaxis()  # labels read top-to-bottom
+    horizBar.invert_yaxis()
     horizBar.set_xlabel('Calories Burned Per Hour')
     horizBar.set_title('Calories Burned,\n Household Chores vs. Competitive Sports')
     horizBar.set_facecolor('#ebcca0')
-
     plt.yticks(fontsize = 9)
+
+    #For some reason, this time around, errors are thrown if charts does not already exist.
     path = Path('./charts')
     if not path.is_dir():
         path.mkdir()
 
+    #Save plot
     savePath = "charts/bargraph.png"
     plt.savefig(savePath, dpi=200)
     plt.show()
@@ -105,6 +108,8 @@ if not path.is_file():
 activities = ["Cleaning, dusting", "Taking out trash", "Mowing lawn, walk, power mower", "Football, competitive",
               "Cross country skiing, racing", "Track and field (hurdles)"]
 
+# Get calorie info for chosen activities.
 theActivities = getActivities(activities)
 
+# Create plot, save to folder, display to end-user.
 makePlot(theActivities)
