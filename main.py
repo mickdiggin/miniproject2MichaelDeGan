@@ -31,7 +31,8 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 from login import *
 
-def getAllActivities():
+
+def get_all_activities():
     # Request a listing of all activities in the caloriesburned database.
     api_url = 'https://api.api-ninjas.com/v1/caloriesburnedactivities'
     response = requests.get(api_url, headers={'X-Api-Key': theKey})
@@ -40,10 +41,11 @@ def getAllActivities():
 
     # Assign to a DataFrame variable
     df = pd.read_json(response.text)
-    # Store in an excel file for later reference to reduce the number of api calls.
+    # Store in an Excel file for later reference to reduce the number of api calls.
     df.to_excel("caloriesburned.xlsx", sheet_name="Sheet1", index=False)
 
-def getActivities(activities):
+
+def get_activities(activities):
     # Create a new DataFrame object df that is empty except for the column headers.
     df = pd.DataFrame(columns=["name", "calories_per_hour", "duration_minutes", "total_calories"])
     index = 1
@@ -54,62 +56,64 @@ def getActivities(activities):
         if response.status_code != requests.codes.ok:
             print("Error:", response.status_code, response.text)
 
-        #Loading JSON data to a list first removed a lot of extraneous info before appending to the DataFrame.
+        # Loading JSON data to a list first removed a lot of extraneous info before appending to the DataFrame.
         temp = json.loads(response.text)
         final = temp[0]
         df.loc[index] = final.values()
         index += 1
 
-    # Store in excel file to see all of our data more easily than in the console.
+    # Store in Excel file to see all of our data more easily than in the console.
     df.to_excel("selectedactivities.xlsx", sheet_name="Sheet1", index=False)
     return df
 
-def makePlot(data):
-    #Sort data
+
+def make_plot(data):
+    # Sort data
     data.sort_values(by=['total_calories'], inplace=True)
     data.reset_index(drop=True, inplace=True)
 
-    #Create horizBar chart as  a subplot for easy manipulation of values.
-    fig, horizBar = plt.subplots(figsize=(10, 8), facecolor='#c9ac83')
+    # Create horizBar chart as  a subplot for easy manipulation of values.
+    fig, horiz_bar = plt.subplots(figsize=(10, 8), facecolor='#c9ac83')
 
-    #Shift right to better display y-ticks.
-    box = horizBar.get_position()
+    # Shift right to better display y-ticks.
+    box = horiz_bar.get_position()
     box.x0 = box.x0 + 0.11
-    horizBar.set_position(box)
+    horiz_bar.set_position(box)
 
-    #Style graph
+    # Style graph
     green = '#498f3b'
     red = '#cc3535'
     bar_colors = [green, green, green, red, red, red]
-    horizBar.barh(data['name'], data['total_calories'], color=bar_colors, edgecolor='#000000', linewidth=0.5)
-    horizBar.invert_yaxis()
-    horizBar.set_xlabel('Calories Burned Per Hour')
-    horizBar.set_title('Calories Burned,\n Household Chores vs. Competitive Sports')
-    horizBar.set_facecolor('#ebcca0')
-    plt.yticks(fontsize = 9)
+    horiz_bar.barh(data['name'], data['total_calories'], color=bar_colors, edgecolor='#000000', linewidth=0.5)
+    horiz_bar.invert_yaxis()
+    horiz_bar.set_xlabel('Calories Burned Per Hour')
+    horiz_bar.set_title('Calories Burned,\n Household Chores vs. Competitive Sports')
+    horiz_bar.set_facecolor('#ebcca0')
+    plt.yticks(fontsize=9)
 
-    #For some reason, this time around, errors are thrown if charts does not already exist.
+    # For some reason, this time around, errors are thrown if charts does not already exist.
     path = Path('./charts')
     if not path.is_dir():
         path.mkdir()
 
-    #Save plot
-    savePath = "charts/bargraph.png"
-    plt.savefig(savePath, dpi=200)
+    # Save plot
+    save_path = "charts/bargraph.png"
+    plt.savefig(save_path, dpi=200)
     plt.show()
+
 
 # Program start
 # Get local copy of all activities in caloriesburned database for easy reference, if not already saved.
 path = Path('./caloriesburned.xlsx')
 if not path.is_file():
-    getAllActivities()
+    get_all_activities()
 
 # Send chosen activities to the api.
 activities = ["Cleaning, dusting", "Taking out trash", "Mowing lawn, walk, power mower", "Football, competitive",
               "Cross country skiing, racing", "Track and field (hurdles)"]
 
 # Get calorie info for chosen activities.
-theActivities = getActivities(activities)
+theActivities = get_activities(activities)
 
 # Create plot, save to folder, display to end-user.
-makePlot(theActivities)
+make_plot(theActivities)
